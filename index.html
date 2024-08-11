@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NicoAi</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        #container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            text-align: center; /* Center align the content */
+        }
+        input[type="text"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+            transition: background-color 0.3s;
+        }
+        #response {
+            margin-top: 20px;
+            background: #e9ecef;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        img {
+            max-width: 100%; /* Make the GIF responsive */
+            height: auto;    /* Maintain aspect ratio */
+            margin-bottom: 20px; /* Add some space below the GIF */
+        }
+    </style>
+</head>
+<body>
+
+<div id="container">
+    <img src="https://media.giphy.com/media/ES4Vcv8zWfIt2/giphy.gif" alt="NicoAi GIF" />
+    <h2>NicoAi</h2>
+    <input type="text" id="question" placeholder="Type your question here..." />
+    <button onclick="askQuestion()">Send</button>
+    <div id="response" aria-live="polite"></div>
+</div>
+
+<script>
+    async function askQuestion() {
+        const questionInput = document.getElementById('question');
+        const question = questionInput.value.trim();
+        questionInput.value = '';
+
+        const responseDiv = document.getElementById('response');
+        if (!question) {
+            responseDiv.innerText = 'Please enter a question.';
+            return;
+        }
+        
+        responseDiv.innerText = 'Thinking...';
+
+        try {
+            const response = await fetch('http://localhost:3000/ask', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ question }),
+            });
+
+            if (!response.ok) throw new Error('Failed to fetch data.');
+
+            const data = await response.json();
+            responseDiv.innerText = data.response || 'No response received.';
+        } catch (error) {
+            responseDiv.innerText = 'An error occurred: ' + error.message;
+        }
+    }
+</script>
+
+</body>
+</html>
